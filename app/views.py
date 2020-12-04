@@ -1,11 +1,10 @@
-from flask import redirect, render_template
-from app.forms import ExerciseInputForm
-from sqlalchemy import func, cast, Date
 import enum
-from app.db import db
+from app.forms import ExerciseInputForm
+from flask import redirect, render_template, Blueprint
+from sqlalchemy import func, cast, Date
 from app.models import Exercise
-from app import app
 from datetime import datetime, timedelta
+from app import db
 
 
 class ExerciseType(enum.Enum):
@@ -18,7 +17,10 @@ class TimeFilterType(enum.Enum):
     WEEKLY = 2
 
 
-@app.route('/', methods=['GET', 'POST'])
+mod_auth = Blueprint('auth', __name__, url_prefix='/')
+
+
+@mod_auth.route('/', methods=['GET', 'POST'])
 def home():
     form = ExerciseInputForm()
     if form.validate_on_submit():
@@ -29,14 +31,14 @@ def home():
     return render_template("index.html", form=form)
 
 
-@app.route('/statistics')
+@mod_auth.route('/statistics')
 def statistics():
     return render_template(
         "statistics.html",
-        num_pushups_today=get_quantity_by_type(ExerciseType.Pushups),
-        num_pullups_today=get_quantity_by_type(ExerciseType.Pullups),
-        num_pushups_this_week=get_quantity_by_type(ExerciseType.Pushups, filter_type=TimeFilterType.WEEKLY),
-        num_pullups_this_week = get_quantity_by_type(ExerciseType.Pullups, filter_type=TimeFilterType.WEEKLY)
+        num_pushups_today=get_quantity_by_type(ExerciseType.Pushups) or 0,
+        num_pullups_today=get_quantity_by_type(ExerciseType.Pullups) or 0,
+        num_pushups_this_week=get_quantity_by_type(ExerciseType.Pushups, filter_type=TimeFilterType.WEEKLY) or 0,
+        num_pullups_this_week=get_quantity_by_type(ExerciseType.Pullups, filter_type=TimeFilterType.WEEKLY) or 0
     )
 
 
