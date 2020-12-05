@@ -1,5 +1,6 @@
-from app import db
 from sqlalchemy import func
+
+from app import db
 
 
 class Exercise(db.Model):
