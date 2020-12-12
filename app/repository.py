@@ -7,9 +7,13 @@ from app.enums import ExerciseType, TimeFilterType
 from app.models import Exercise, User
 
 
-def get_quantity_by_type(exercise_type: ExerciseType, filter_type: TimeFilterType = TimeFilterType.DAILY) -> int:
+def get_quantity_by_type(
+        exercise_type: ExerciseType,
+        user: User,
+        filter_type: TimeFilterType = TimeFilterType.DAILY
+) -> int:
     query = db.session.query(func.sum(Exercise.quantity)).filter_by(
-        user_id=1, type=exercise_type.value
+        user_id=user.id, type=exercise_type.value
     )
     if filter_type == TimeFilterType.WEEKLY:
         monday = datetime.now() - timedelta(days=datetime.now().weekday())
@@ -23,8 +27,8 @@ def get_quantity_by_type(exercise_type: ExerciseType, filter_type: TimeFilterTyp
         ).scalar()
 
 
-def insert_exercise(exercise_type: ExerciseType, quantity: int) -> None:
-    exercise = Exercise(type=exercise_type.value, quantity=quantity)
+def insert_exercise(exercise_type: ExerciseType, quantity: int, user: User) -> None:
+    exercise = Exercise(type=exercise_type.value, quantity=quantity, user_id=user.id)
     db.session.add(exercise)
     db.session.commit()
     return

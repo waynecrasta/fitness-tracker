@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import SubmitField, SelectField, StringField, PasswordField
 from wtforms.fields.html5 import IntegerField
-from wtforms.validators import InputRequired
+from wtforms.validators import InputRequired, EqualTo
 
 
 class ExerciseInputForm(FlaskForm):
@@ -13,10 +13,10 @@ class ExerciseInputForm(FlaskForm):
 class SignupForm(FlaskForm):
     username = StringField('username', validators=[InputRequired()], render_kw={"placeholder": "Username"})
     password = PasswordField('password',
-                             validators=[InputRequired(), ],
+                             validators=[InputRequired(), EqualTo('confirm', message='Passwords must match')],
                              render_kw={"placeholder": "Password"})
-    # confirm = PasswordField('Repeat your Password', validators=[InputRequired()],
-    #                         render_kw={"placeholder": "Repeat your password"})
+    confirm = PasswordField('Confirm your Password', validators=[InputRequired()],
+                            render_kw={"placeholder": "Confirm your password"})
     submit = SubmitField("Register")
 
 
@@ -25,4 +25,4 @@ class LoginForm(FlaskForm):
     password = PasswordField('password',
                              validators=[InputRequired(), ],
                              render_kw={"placeholder": "Password"})
-    submit = SubmitField("Register")
+    submit = SubmitField("Login")

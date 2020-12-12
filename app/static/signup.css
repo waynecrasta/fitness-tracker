@@ -549,6 +549,11 @@ input[type="checkbox"]:not(old):checked + label > span:before {
   width: auto;
 }
 
+.invalid-input {
+  color: red;
+  font-size: 80%;
+}
+
 label {
   position: absolute;
   left: 0;

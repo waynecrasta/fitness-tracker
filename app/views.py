@@ -14,13 +14,12 @@ main = Blueprint("main", __name__, url_prefix="/")
 def home():
     if not current_user.is_authenticated:
         return redirect(url_for("main.login"))
-
     form = ExerciseInputForm()
     if form.validate_on_submit():
         exercise_type = ExerciseType[form.name.data]
-        insert_exercise(exercise_type, form.quantity.data)
+        insert_exercise(exercise_type, form.quantity.data, current_user)
         flash("Exercise added!")
-        return redirect(url_for("main.statistics"))
+        return redirect(url_for("main.home"))
 
     return render_template("index.html", form=form)
 
@@ -29,10 +28,18 @@ def home():
 def statistics():
     return render_template(
         "statistics.html",
-        num_pushups_today=get_quantity_by_type(ExerciseType.Pushups) or 0,
-        num_pullups_today=get_quantity_by_type(ExerciseType.Pullups) or 0,
-        num_pushups_this_week=get_quantity_by_type(ExerciseType.Pushups, filter_type=TimeFilterType.WEEKLY) or 0,
-        num_pullups_this_week=get_quantity_by_type(ExerciseType.Pullups, filter_type=TimeFilterType.WEEKLY) or 0,
+        num_pushups_today=get_quantity_by_type(ExerciseType.Pushups, current_user) or 0,
+        num_pullups_today=get_quantity_by_type(ExerciseType.Pullups, current_user) or 0,
+        num_pushups_this_week=get_quantity_by_type(
+            ExerciseType.Pushups,
+            current_user,
+            filter_type=TimeFilterType.WEEKLY
+        ) or 0,
+        num_pullups_this_week=get_quantity_by_type(
+            ExerciseType.Pullups,
+            current_user,
+            filter_type=TimeFilterType.WEEKLY
+        ) or 0,
     )
 
 
@@ -40,10 +47,15 @@ def statistics():
 def signup():
     form = SignupForm()
     if form.validate_on_submit():
+        username = form.username.data
+        if User.query.filter_by(username=username).first():
+            form.username.errors.append("There already exists a user with this username")
+            return render_template('signup.html', form=form)
         password = generate_password_hash(form.password.data)
-        user = User(username=form.username.data, password=password)
+        user = User(username=username, password=password)
         insert_user(user)
         flash("Sign up successful! Welcome")
+        login_user(user)
         return redirect(url_for("main.home"))
 
     return render_template(
