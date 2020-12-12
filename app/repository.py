@@ -4,7 +4,7 @@ from sqlalchemy import func, Date, cast
 
 from app import db
 from app.enums import ExerciseType, TimeFilterType
-from app.models import Exercise
+from app.models import Exercise, User
 
 
 def get_quantity_by_type(exercise_type: ExerciseType, filter_type: TimeFilterType = TimeFilterType.DAILY) -> int:
@@ -26,5 +26,11 @@ def get_quantity_by_type(exercise_type: ExerciseType, filter_type: TimeFilterTyp
 def insert_exercise(exercise_type: ExerciseType, quantity: int) -> None:
     exercise = Exercise(type=exercise_type.value, quantity=quantity)
     db.session.add(exercise)
+    db.session.commit()
+    return
+
+
+def insert_user(user: User):
+    db.session.add(user)
     db.session.commit()
     return

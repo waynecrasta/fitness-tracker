@@ -1,24 +1,23 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends "base.html" %} {% block content %}
 <table class="table table-bordered">
-    <thead>
+  <thead>
     <tr>
-        <th scope="col"></th>
-        <th scope="col">Today</th>
-        <th scope="col">This Week</th>
+      <th scope="col"></th>
+      <th scope="col">Today</th>
+      <th scope="col">This Week</th>
     </tr>
-    </thead>
-    <tbody>
+  </thead>
+  <tbody>
     <tr>
-        <th scope="row">Push Ups</th>
-        <td>{{num_pushups_today}}</td>
-        <td>{{num_pushups_this_week}}</td>
+      <th scope="row">Push Ups</th>
+      <td>{{num_pushups_today}}</td>
+      <td>{{num_pushups_this_week}}</td>
     </tr>
     <tr>
-        <th scope="row">Pull Ups</th>
-        <td>{{num_pullups_today}}</td>
-        <td>{{num_pullups_this_week}}</td>
+      <th scope="row">Pull Ups</th>
+      <td>{{num_pullups_today}}</td>
+      <td>{{num_pullups_this_week}}</td>
     </tr>
-    </tbody>
+  </tbody>
 </table>
 {% endblock %}
