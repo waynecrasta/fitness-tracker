@@ -1,0 +1,20 @@
+{% extends "base.html" %} {% block content %}
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">Excercise Type</th>
+      <th scope="col">Quantity</th>
+      <th scope="col">Time Inputted</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for exercise in exercises %}
+    <tr>
+      <td>{{exercise['type']}}</td>
+      <td>{{exercise['quantity']}}</td>
+      <td>{{exercise['time_created']}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{%endblock%}

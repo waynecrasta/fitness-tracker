@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app.enums import ExerciseType, TimeFilterType
 from app.forms import ExerciseInputForm, SignupForm, LoginForm
 from app.models import User
-from app.repository import get_quantity_by_type, insert_exercise, insert_user
+from app.repository import get_quantity_by_type, insert_exercise, insert_user, get_exercises_by_user
 
 main = Blueprint("main", __name__, url_prefix="/")
 
@@ -28,8 +28,8 @@ def home():
 def statistics():
     return render_template(
         "statistics.html",
-        num_pushups_today=get_quantity_by_type(ExerciseType.Pushups, current_user) or 0,
-        num_pullups_today=get_quantity_by_type(ExerciseType.Pullups, current_user) or 0,
+        num_pushups_today=get_quantity_by_type(ExerciseType.Pushups, current_user, TimeFilterType.DAILY) or 0,
+        num_pullups_today=get_quantity_by_type(ExerciseType.Pullups, current_user, TimeFilterType.DAILY) or 0,
         num_pushups_this_week=get_quantity_by_type(
             ExerciseType.Pushups,
             current_user,
@@ -87,3 +87,19 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('main.home'))
+
+
+@main.route("/workout_log")
+@login_required
+def log():
+    exercises_models = get_exercises_by_user(current_user)
+    # pdb.set_trace()
+    exercises = [
+        {
+            'type': ExerciseType(exercise.type).name,
+            'quantity': exercise.quantity,
+            'time_created': exercise.time_created.strftime("%a %b %d %I:%M %p")
+        } for exercise in exercises_models
+    ]
+
+    return render_template("log.html", exercises=exercises)

@@ -21,10 +21,16 @@ def get_quantity_by_type(
             cast(Exercise.time_created, Date) >= monday.date(),
             cast(Exercise.time_created, Date) <= datetime.today().date(),
         ).scalar()
-    else:
+    elif filter_type == TimeFilterType.DAILY:
         return query.filter(
             cast(Exercise.time_created, Date) == datetime.today().date()
         ).scalar()
+    else:
+        return query.scalar()
+
+
+def get_exercises_by_user(user: User):
+    return db.session.query(Exercise).filter_by(user_id=user.id).order_by(Exercise.time_created.desc()).all()
 
 
 def insert_exercise(exercise_type: ExerciseType, quantity: int, user: User) -> None:
